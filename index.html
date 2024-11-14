@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipment Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            background-color: #333;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 80%;
+            max-width: 600px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .menu button {
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .menu button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .output p {
+            margin: 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Shipment Manager</h1>
+        <div class="menu">
+            <button onclick="receiveShipment()">Receive New Shipment</button>
+            <button onclick="distributeLatestShipment()">Distribute Latest Shipment</button>
+            <button onclick="viewLatestShipment()">View Latest Shipment</button>
+            <button onclick="getShipmentDetails()">Get Shipment & Distributed Orders</button>
+            <button onclick="viewTotalShipments()">View Total Shipments</button>
+            <button onclick="exitProgram()">Exit</button>
+        </div>
+        <div class="output" id="output">
+          
+        </div>
+    </div>
+
+    <script>
+        const outputDiv = document.getElementById("output");
+        const receivedShipments = [];
+        const distributedShipments = [];
+
+        function addOutput(text) {
+            const p = document.createElement("p");
+            p.textContent = text;
+            outputDiv.appendChild(p);
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+
+        function receiveShipment() {
+            const name = prompt("Enter the shipment name:");
+            const quantity = prompt("Enter the quantity:");
+            const shipment = { name, quantity, date: new Date().toLocaleString() };
+            receivedShipments.push(shipment);
+            addOutput(`Shipment received: Name: ${name}, Quantity: ${quantity}, Date: ${shipment.date}`);
+        }
+
+        function distributeLatestShipment() {
+            if (receivedShipments.length === 0) {
+                addOutput("No shipments left to distribute.");
+                return;
+            }
+            const latestShipment = receivedShipments.pop();
+            distributedShipments.push(latestShipment);
+            addOutput(`Distributed shipment: Name: ${latestShipment.name}, Quantity: ${latestShipment.quantity}, Date: ${latestShipment.date}`);
+        }
+
+        function viewLatestShipment() {
+            if (receivedShipments.length === 0) {
+                addOutput("No shipments in stock.");
+                return;
+            }
+            const latestShipment = receivedShipments[receivedShipments.length - 1];  // Peek the latest shipment (LIFO)
+            addOutput(`Latest shipment in stock: Name: ${latestShipment.name}, Quantity: ${latestShipment.quantity}, Date: ${latestShipment.date}`);
+        }
+
+        function getShipmentDetails() {
+            addOutput("Shipment and Distributed Orders Details:");
+            if (receivedShipments.length === 0) {
+                addOutput("No shipments currently in stock.");
+            } else {
+                addOutput("Current Stock (LIFO):");
+                receivedShipments.slice().reverse().forEach((shipment, index) => {
+                    addOutput(`${index + 1}. Name: ${shipment.name}, Quantity: ${shipment.quantity}, Date: ${shipment.date}`);
+                });
+            }
+
+            if (distributedShipments.length === 0) {
+                addOutput("No distributed shipments yet.");
+            } else {
+                addOutput("Distributed Shipments (LIFO):");
+                distributedShipments.slice().reverse().forEach((shipment, index) => {
+                    addOutput(`${index + 1}. Name: ${shipment.name}, Quantity: ${shipment.quantity}, Date: ${shipment.date}`);
+                });
+            }
+        }
+
+        function viewTotalShipments() {
+            addOutput(`Total shipments in stock: ${receivedShipments.length}`);
+        }
+
+        function exitProgram() {
+            addOutput("Exiting program.");
+            alert("Program exited. Refresh to restart.");
+        }
+    </script>
+</body>
+</html>
